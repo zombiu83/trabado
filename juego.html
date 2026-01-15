@@ -26,9 +26,10 @@ html, body{
   display:grid;  
   #board{
   #board{
-  grid-template-columns:repeat(4,70px);
-  grid-template-rows:repeat(5,70px);
-  } 
+  #board{
+  grid-template-columns: repeat(4, 80px);
+  grid-template-rows: repeat(5, 80px);
+  }
   gap:4px;  
   padding:4px;  
   position:relative;  
@@ -254,7 +255,9 @@ gameMusic.volume = 0.80; // 🎚️ volumen editable
 sMove.preload = "auto";
 sMove.playbackRate = 2;
   
-const COLS=4, ROWS=5, SIZE=74;
+const COLS = 4;
+const ROWS = 5;
+const SIZE = 80;
 const board=document.getElementById("board");  
   
 let grid=[];  
