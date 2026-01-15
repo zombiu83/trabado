@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Trabado</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+
+<style>
+@font-face{
+  font-family: "TrabadoFont";
+  src: url("fonts/pixelgamer-regular.otf");
+}
+body{
+  margin:0;
+  height:100vh;
+  background:url("img/fondo.jpg") center/cover no-repeat;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:system-ui;
+}
+
+#menu{
+  background:rgba(0,0,0,.55);
+  padding:40px 30px;
+  border-radius:20px;
+  text-align:center;
+  color:white;
+  box-shadow:0 20px 40px rgba(0,0,0,.8);
+}
+
+/* ===== TÍTULO ===== */
+#title{
+  font-size:48px;
+  font-weight:900;
+  margin-bottom:30px;
+  color:#66cdaa;
+  animation: bounce 1s infinite ease-in-out;
+  font-family: "TrabadoFont", system-ui;
+  text-shadow:
+  0 2px 0 #15803d,
+  0 4px 0 #166534,
+  0 6px 0 #14532d,
+  0 8px 12px rgba(0,0,0,.8);
+}
+
+@keyframes bounce{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-12px); }
+}
+
+/* ===== BOTONES ===== */
+.menu-btn{
+  width:200px;
+  padding:14px;
+  margin:10px 0;
+  border:none;
+  border-radius:14px;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+  background:#1e3a8a;
+  color:white;
+  box-shadow:0 8px 16px rgba(0,0,0,.6);
+}
+
+.menu-btn:active{
+  transform:scale(.95);
+}
+#introOverlay{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+}
+
+#introOverlay img{
+  max-width:80%;
+  max-height:60%;
+  animation: introZoom 1.2s ease-out forwards;
+}
+
+#introOverlay span{
+  margin-top:20px;
+  color:white;
+  font-size:18px;
+  opacity:.7;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes introZoom{
+  from{ transform:scale(.6); opacity:0 }
+  to{ transform:scale(1); opacity:1 }
+}
+
+@keyframes blink{
+  0%,100%{ opacity:.3 }
+  50%{ opacity:1 }
+}
+</style>
+</head>
+
+<body>
+<div id="introOverlay">
+  <img src="img/zombius.png" alt="Zombius Game">
+  <span>Tocá para empezar</span>
+</div>
+
+<div id="menu">
+  <div id="title">TRABADO</div>
+
+  <button class="menu-btn" onclick="location.href='juego.html'">
+    JUGAR
+  </button>
+
+  <button class="menu-btn" onclick="location.href='reglas.html'">
+    REGLAS
+  </button>
+</div>
+<script>
+const introOverlay = document.getElementById("introOverlay");
+
+/* ===== MÚSICA MENÚ ===== */
+const menuMusic = new Audio("sounds/menu.mp3");
+menuMusic.loop = true;
+menuMusic.volume = 0.50; // 🎚️ volumen editable
+
+// si ya vio el logo
+if (sessionStorage.getItem("introSeen")) {
+  introOverlay.style.display = "none";
+
+  // 🔊 arrancar música directo
+  menuMusic.play().catch(()=>{});
+}
+
+introOverlay.addEventListener("click", () => {
+  introOverlay.style.display = "none";
+  sessionStorage.setItem("introSeen", "yes");
+
+  // 🔊 arrancar música
+  menuMusic.play().catch(()=>{});
+});
+
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+
+
+</script>
+
+
+</body>
+</html>

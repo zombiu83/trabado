@@ -1,0 +1,606 @@
+<!DOCTYPE html>  <html lang="es">  
+<head>  
+<meta charset="UTF-8">  
+<title>Trabado</title>  <style>  
+html, body{
+  margin:0;
+  padding:0;
+  height:100%;
+  overflow:hidden;
+  touch-action:none;
+  overscroll-behavior: none;
+
+  min-height:100dvh;
+  
+  background:#111;  
+  display:flex;  
+  justify-content:center;  
+  align-items:center;  
+  height:80vh;  
+  color:white;  
+  flex-direction:column;  
+}  
+  
+#board{  
+  display:grid;  
+  grid-template-columns:repeat(4,70px);  
+  grid-template-rows:repeat(5,70px);  
+  gap:4px;  
+  padding:4px;  
+  position:relative;  
+  border-radius:14px;  
+  background:linear-gradient(145deg,#1e3a8a,#0f2560);  
+  box-shadow:  
+    inset 4px 4px 8px rgba(255,255,255,.15),  
+    inset -4px -4px 8px rgba(0,0,0,.4),  
+    8px 8px 16px rgba(0,0,0,.6);  
+}  
+  
+.cell{  
+  width:70px;  
+  height:70px;  
+  border-radius:8px;  
+  background:linear-gradient(145deg,#1e40af,#162e75);  
+  box-shadow:  
+    inset 2px 2px 4px rgba(255,255,255,.15),  
+    inset -2px -2px 4px rgba(0,0,0,.4);  
+}  
+  
+.piece{  
+  position:absolute;  
+  border-radius:12px;  
+  box-shadow:  
+    inset 3px 3px 6px rgba(255,255,255,.35),  
+    inset -4px -4px 8px rgba(0,0,0,.35),  
+    4px 4px 10px rgba(0,0,0,.5);  
+  transition:left .15s ease-out, top .15s ease-out;  
+}  
+
+  
+.piece:active{ transform:scale(.96); }  
+  
+.red{ background:linear-gradient(145deg,#ef4444,#b91c1c); }  
+.yellow{ background:linear-gradient(145deg,#fde047,#eab308); }  
+.green{ background:linear-gradient(145deg,#22c55e,#15803d); }  
+  
+.win{ animation:win .6s infinite alternate; }  
+@keyframes win{ from{transform:scale(1)} to{transform:scale(1.06)} }  
+  
+button{  
+  padding:10px 16px;  
+  border-radius:10px;  
+  border:none;  
+  font-weight:bold;  
+  cursor:pointer;  
+} 
+.level-btn.active{
+  background:#22c55e;
+  color:black;
+  box-shadow:
+    0 0 10px rgba(34,197,94,.8),
+    inset 0 2px 4px rgba(255,255,255,.4);
+}
+/* ===== MARCO CONTENEDOR CON SALIDA ===== */  
+  
+#frame{  
+  position:relative;  
+  padding:18px;  
+  background:#162e75;  
+  border-radius:20px;  
+  box-shadow:  
+    inset 0 0 0 6px #162e75,  
+    10px 10px 20px rgba(0,0,0,.8);  
+}  
+/* ===== SALIDA POR DEBAJO DEL TABLERO ===== */  
+  
+#exit{  
+  position:absolute;  
+  bottom:280px;  
+  left:50%;  
+  transform:translateX(-50%);  
+  width:160px;  
+  height:50px;  
+  background:#162e75;  
+  border-radius:0 0 20px 20px;  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  font-weight:bold;  
+  letter-spacing:2px;  
+  color:white;  
+  box-shadow:  
+    inset 0 6px 8px rgba(255,255,255,.15),  
+    0 10px 20px rgba(0,0,0,.7);  
+}  
+  
+  
+  
+/* Mantiene las fichas por encima del marco */  
+#board{  
+  position:relative;  
+  z-index:2;  
+}  
+#bottomBar{
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 9999;
+}
+
+#bottomBar button{
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 28px;
+  background:#162e75;
+  color:white;
+  box-shadow:
+    0 6px 14px rgba(0,0,0,.6),
+    inset 0 2px 4px rgba(255,255,255,.2);
+}
+#winOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:48px;
+  font-weight:bold;
+  color:#22c55e;
+  letter-spacing:4px;
+  z-index:9999;
+}
+
+#winOverlay.show{
+  display:flex;
+  animation: fadeIn .6s ease-out forwards;
+}
+
+#winOverlay span{
+  position:relative;
+  animation:
+    zoomWin .6s ease-out forwards,
+    pulseWin 1.2s infinite ease-in-out .6s;
+  text-shadow:
+    0 0 10px #22c55e,
+    0 0 20px #22c55e,
+    0 0 40px #16a34a;
+}
+
+@keyframes fadeIn{
+  from{ opacity:0 }
+  to{ opacity:1 }
+}
+
+@keyframes zoomWin{
+  from{ transform:scale(.3) rotate(-5deg); opacity:0 }
+  to{ transform:scale(1) rotate(0); opacity:1 }
+}
+
+@keyframes pulseWin{
+  0%,100%{ transform:scale(1) }
+  50%{ transform:scale(1.08) }
+
+}
+#startOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9998;
+}
+
+#startBtn{
+  padding:10px 10px;
+  font-size:90px;
+  font-weight:0
+  border:none;
+  border-radius:1px;
+  cursor:pointer;
+ background:transparent;
+}
+#startBtn:active{
+  transform:scale(.95);
+}
+#board{
+  touch-action: none;
+}
+
+</style>  </head>  <body>  <div id="frame">  
+  <div id="board"></div>  
+</div>  
+<div id="exit">SALIDA</div>  <div style="margin-top:58px;display:flex;gap:8px;flex-wrap:wrap">  
+  <button class="level-btn" data-level="facil" onclick="loadLevel('facil')">Fácil</button>  
+<button class="level-btn" data-level="intermedio" onclick="loadLevel('intermedio')">Intermedio</button>  
+<button class="level-btn" data-level="dificil" onclick="loadLevel('dificil')">Difícil</button>  
+<button class="level-btn" data-level="experto" onclick="loadLevel('experto')">Experto</button>
+<div id="startOverlay">
+  <button id="startBtn">🕹️</button>
+</div>
+
+<div id="winOverlay">
+  <span>🎉GANASTE🎉</span>
+</div>
+</div >  
+<div id="bottomBar">
+  <button id="menuBtn">⬅️</button>
+  <button id="muteBtn">🔊</button>
+</div>
+
+  
+<script>  
+
+document.addEventListener("touchmove", function(e){
+  e.preventDefault();
+}, { passive:false });
+
+const sMove = new Audio("sounds/slide.mp3");// <-- tu mp3 aquí
+sMove.volume = 0.20; // 🎚️ volumen editable
+/* ===== MÚSICA DEL JUEGO ===== */
+const gameMusic = new Audio("sounds/juego.mp3");
+gameMusic.loop = true;
+gameMusic.volume = 0.80; // 🎚️ volumen editable
+
+sMove.preload = "auto";
+sMove.playbackRate = 2;
+  
+const COLS=4, ROWS=5, SIZE=74;  
+const board=document.getElementById("board");  
+  
+let grid=[];  
+let pieces=[];  
+let audioUnlocked = false;
+function unlockAudio(){
+  if(audioUnlocked) return;
+
+  if(audioCtx.state === "suspended"){
+    audioCtx.resume();   // 🔑 ESTA ES LA LLAVE
+  }
+
+  sMove.play().catch(()=>{});
+  sMove.pause();
+  sMove.currentTime = 0;
+
+  audioUnlocked = true;
+}
+  
+  
+  
+const LEVELS={  
+  facil:[  
+    {id:1,x:1,y:2,w:2,h:2,c:'green'},  
+    {id:2,x:0,y:1,w:2,h:1,c:'red'},  
+    {id:3,x:2,y:1,w:2,h:1,c:'red'},  
+    {id:4,x:0,y:4,w:2,h:1,c:'red'},  
+    {id:5,x:2,y:4,w:2,h:1,c:'red'},  
+    {id:6,x:1,y:0,w:2,h:1,c:'red'},  
+    {id:7,x:0,y:2,w:1,h:1,c:'yellow'},  
+    {id:8,x:3,y:2,w:1,h:1,c:'yellow'},  
+    {id:9,x:0,y:3,w:1,h:1,c:'yellow'},  
+    {id:10,x:3,y:3,w:1,h:1,c:'yellow'}  
+  ],  
+  intermedio:[  
+    {id:1,x:1,y:0,w:2,h:2,c:'green'},  
+    {id:2,x:0,y:2,w:1,h:2,c:'red'},  
+    {id:3,x:1,y:2,w:1,h:2,c:'red'},  
+    {id:4,x:2,y:2,w:1,h:2,c:'red'},  
+    {id:5,x:3,y:2,w:1,h:2,c:'red'},  
+    {id:6,x:1,y:4,w:2,h:1,c:'red'},  
+    {id:7,x:0,y:0,w:1,h:1,c:'yellow'},  
+    {id:8,x:0,y:1,w:1,h:1,c:'yellow'},  
+    {id:9,x:3,y:0,w:1,h:1,c:'yellow'},  
+    {id:10,x:3,y:1,w:1,h:1,c:'yellow'}  
+  ],  
+  dificil:[  
+        {id:1,x:1,y:0,w:2,h:2,c:'green'},  
+    {id:2,x:0,y:0,w:1,h:2,c:'red'},  
+    {id:3,x:3,y:0,w:1,h:2,c:'red'},  
+    {id:4,x:0,y:2,w:1,h:2,c:'red'},  
+    {id:5,x:3,y:2,w:1,h:2,c:'red'},  
+    {id:6,x:1,y:2,w:2,h:1,c:'red'},  
+    {id:7,x:0,y:4,w:1,h:1,c:'yellow'},  
+    {id:8,x:3,y:4,w:1,h:1,c:'yellow'},  
+    {id:9,x:1,y:3,w:1,h:1,c:'yellow'},  
+    {id:10,x:2,y:3,w:1,h:1,c:'yellow'}  
+  ],  
+  experto:[  
+    {id:1,x:1,y:0,w:2,h:2,c:'green'},  
+    {id:2,x:0,y:3,w:2,h:1,c:'red'},  
+    {id:3,x:2,y:3,w:2,h:1,c:'red'},  
+    {id:4,x:1,y:2,w:2,h:1,c:'red'},  
+    {id:5,x:3,y:1,w:1,h:2,c:'red'},  
+    {id:6,x:0,y:1,w:1,h:2,c:'red'},  
+    {id:7,x:0,y:0,w:1,h:1,c:'yellow'},  
+    {id:8,x:3,y:0,w:1,h:1,c:'yellow'},  
+    {id:9,x:1,y:4,w:1,h:1,c:'yellow'},  
+    {id:10,x:2,y:4,w:1,h:1,c:'yellow'}  
+  ]  
+};  
+  
+// tablero base  
+for(let i=0;i<COLS*ROWS;i++){  
+  const c=document.createElement("div");  
+  c.className="cell";  
+  board.appendChild(c);  
+}  
+  
+function resetGrid(){  
+  grid=Array.from({length:ROWS},()=>Array(COLS).fill(null));  
+}  
+  
+function occupy(p){  
+  for(let y=p.y;y<p.y+p.h;y++)  
+    for(let x=p.x;x<p.x+p.w;x++)  
+      grid[y][x]=p.id;  
+}  
+  
+function clear(p){  
+  for(let y=0;y<ROWS;y++)  
+    for(let x=0;x<COLS;x++)  
+      if(grid[y][x]===p.id) grid[y][x]=null;  
+}  
+  
+function canMove(p,dx,dy){  
+  clear(p);  
+  for(let y=p.y+dy;y<p.y+p.h+dy;y++)  
+    for(let x=p.x+dx;x<p.x+p.w+dx;x++)  
+      if(x<0||y<0||x>=COLS||y>=ROWS||grid[y][x]){  
+        occupy(p); return false;  
+      }  
+  occupy(p);  
+  return true;  
+}  
+  
+function move(p,dx,dy){  
+  if(!canMove(p,dx,dy)) return false;  
+
+  clear(p);  
+  p.x+=dx; 
+  p.y+=dy;  
+
+  occupy(p);
+
+  playSound("move"); // 🔊 SONIDO INMEDIATO
+
+  p.el.classList.add("moving");
+  setTimeout(()=>p.el.classList.remove("moving"),250);
+
+  p.el.style.left = p.x * SIZE + "px";  
+  p.el.style.top  = p.y * SIZE + "px";  
+  // ===== VICTORIA =====
+  if(p.c==="green" && p.y+p.h===ROWS && p.x===1){
+    winEffect(p);          // agrega clase .win y sonido
+    p.el.classList.add("win");
+  }
+  saveGame(currentLevel); // 💾 guarda estado REAL
+
+  return true;  
+}
+  
+function tryMove(p){
+  if(!gameStarted) return false;
+
+  return (
+    move(p,1,0) ||
+    move(p,-1,0) ||
+    move(p,0,1) ||
+    move(p,0,-1)
+  );
+}
+  
+/* ===== LOAD LEVEL ===== */  
+let currentLevel = "facil";  
+function loadLevel(name){
+  localStorage.setItem("nivelActual", name);
+
+  // resto de tu código
+
+  // 🔘 resaltar botón del nivel actual
+  document.querySelectorAll(".level-btn").forEach(b=>{
+    b.classList.remove("active");
+    if(b.dataset.level === name){
+      b.classList.add("active");
+    }
+  });
+  board.querySelectorAll(".piece").forEach(e=>e.remove());  
+  pieces=[];  
+  resetGrid();  
+currentLevel = name;  
+  
+  LEVELS[name].forEach(cfg=>{  
+    const p={...cfg};  
+    const el=document.createElement("div");  
+    el.className=`piece ${p.c}`;  
+    el.style.width=p.w*SIZE-2+"px";  
+    el.style.height=p.h*SIZE-2+"px";  
+    el.style.left=p.x*SIZE+"px";  
+    el.style.top=p.y*SIZE+"px";  
+  
+    el.onclick = () => {
+  unlockAudio();      // 👈 desbloquea sonido al tocar la pieza
+  if (tryMove(p)) {
+    playSound("move"); // 👈 sonido al mover
+  }
+};
+  
+    // swipe  
+    let sx, sy;  
+    el.addEventListener("touchstart",e=>{  
+      sx=e.touches[0].clientX;  
+      sy=e.touches[0].clientY;  
+    },{passive:true});  
+  
+    el.addEventListener("touchend",e=>{  
+      const dx=e.changedTouches[0].clientX-sx;  
+      const dy=e.changedTouches[0].clientY-sy;  
+      if(Math.abs(dx)>Math.abs(dy))  
+        move(p,dx>0?1:-1,0);  
+      else  
+        move(p,0,dy>0?1:-1);  
+    },{passive:true});  
+  
+    p.el=el;  
+    board.appendChild(el);  
+    pieces.push(p);  
+    occupy(p);  
+  });  
+}  
+  
+if(!loadSavedGame()){
+  loadLevel("facil");
+}
+document
+function saveGame(level){  
+  const data = {  
+    level,  
+    pieces: pieces.map(p=>({  
+      id:p.id,x:p.x,y:p.y,w:p.w,h:p.h,c:p.c  
+    }))  
+  };  
+  localStorage.setItem("trabado_save", JSON.stringify(data));  
+}  
+  
+function loadSavedGame(){  
+  const raw = localStorage.getItem("trabado_save");  
+  if(!raw) return false;  
+  const data = JSON.parse(raw);  
+  loadLevel(data.level);  
+  data.pieces.forEach(sp=>{  
+    const p = pieces.find(pp=>pp.id===sp.id);  
+    if(p){  
+      clear(p);  
+      p.x=sp.x; p.y=sp.y;  
+      occupy(p);  
+      p.el.style.left=p.x*SIZE+"px";  
+      p.el.style.top=p.y*SIZE+"px";  
+    }  
+  });  
+  return true;  
+}  
+/* ===== SONIDOS ===== */  
+  
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();  
+  
+function playSound(type){
+  if(muted) return; // no suena si está muteado
+
+  if(type === "move"){
+  sMove.currentTime = 0;
+
+  // 🎲 variación leve de velocidad
+  sMove.playbackRate = 1.8 + Math.random() * 0.3;
+
+  sMove.play();
+}
+
+  if(type === "block"){
+    // mantené tu sonido de bloque si querés
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.frequency.value = 120;
+    g.gain.value = 0.06;
+    o.start();
+    o.stop(audioCtx.currentTime + 0.12);
+  }
+
+  if(type === "win"){
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    o.frequency.value = 720;
+    g.gain.value = 0.12;
+    o.start();
+    o.stop(audioCtx.currentTime + 0.25);
+  }
+}
+function globalUnlock(){
+  unlockAudio();
+  document.removeEventListener("touchstart", globalUnlock);
+  document.removeEventListener("pointerdown", globalUnlock);
+  document.removeEventListener("mousedown", globalUnlock);
+}
+
+document.addEventListener("touchstart", globalUnlock, { passive:true });
+document.addEventListener("pointerdown", globalUnlock);
+document.addEventListener("mousedown", globalUnlock);
+  
+/* ===== ENGANCHE DE SONIDOS ===== */  
+  
+const originalCanMove = canMove;  
+  
+window.canMove = function(p, dx, dy){  
+  const ok = originalCanMove(p, dx, dy);  
+  if(!ok) playSound("block");  
+  return ok;  
+};  
+  
+  
+/* ===== VICTORIA ===== */  
+function winEffect(piece){  
+  playSound("win");  
+  piece.el.classList.add("win");  
+}  
+  
+/* ===== BOTÓN MUTE ===== */  
+let muted = false;  
+let gameStarted = false;
+  
+  
+const muteBtn = document.getElementById("muteBtn");  
+muteBtn.onclick = () => {  
+  muted = !muted;
+
+  if(muted){
+    gameMusic.pause();      // 🔇 pausa música
+  } else {
+    gameMusic.play().catch(()=>{}); // 🔊 reanuda música
+  }
+
+  muteBtn.textContent = muted ? "🔇" : "🔊";  
+};
+document.getElementById("menuBtn").onclick = () => {  
+  location.href = "index.html";  
+};  
+
+const winOverlay = document.getElementById("winOverlay");
+
+const observer = new MutationObserver(() => {
+  const winner = document.querySelector(".piece.green.win");
+  if(winner){
+    winOverlay.style.display = "flex";
+  }
+});
+
+observer.observe(document.body, {
+  subtree:true,
+  attributes:true,
+  attributeFilter:["class"]
+});
+
+winOverlay.addEventListener("click", () => {
+  winOverlay.style.display = "none";
+  loadLevel(currentLevel);
+});
+  
+  const startOverlay = document.getElementById("startOverlay");
+const startBtn = document.getElementById("startBtn");
+
+startBtn.onclick = () => {
+  unlockAudio();
+  gameMusic.play().catch(()=>{}); // 🔊 ARRANCA MÚSICA
+  gameStarted = true;
+  startOverlay.style.display = "none";
+};
+
+
+</script>  </body>  
+</html>
