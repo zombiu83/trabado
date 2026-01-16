@@ -570,6 +570,17 @@ function winEffect(piece){
 /* ===== BOTÓN MUTE ===== */  
 let muted = false;  
 let gameStarted = false;
+  const muteBtn = document.getElementById("muteBtn");
+
+muteBtn.onclick = () => {
+  muted = !muted;
+
+  if (musicGain) {
+    musicGain.gain.value = muted ? 0 : 0.35;
+  }
+
+  muteBtn.textContent = muted ? "🔇" : "🔊";
+};
   
   
 
