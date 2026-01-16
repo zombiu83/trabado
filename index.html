@@ -125,7 +125,15 @@ body{
 </div>
 <script>
 /* ===== AUDIO ===== */
-let menuMusic = null;
+let menuMusic = new Audio("sounds/menu.mp3");
+menuMusic.loop = true;
+menuMusic.volume = 0.5;
+
+function startMenuMusic(){
+  menuMusic.play().catch(e => {
+    console.log("Audio bloqueado:", e);
+  });
+}
 
 /* ===== DOM ===== */
 const introOverlay = document.getElementById("introOverlay");
@@ -146,8 +154,7 @@ function startMenuMusic(){
 introOverlay.addEventListener("click", () => {
   introOverlay.style.display = "none";
   sessionStorage.setItem("introSeen", "yes");
-
-  startMenuMusic(); // 🔊 CREA Y REPRODUCE ACÁ
+  startMenuMusic();
 });
 
 /* ===== SI YA VIO EL LOGO ===== */
