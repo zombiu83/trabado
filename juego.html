@@ -256,13 +256,22 @@ const board=document.getElementById("board");
 let grid=[];  
 let pieces=[];  
 let audioUnlocked = false;
+
 function unlockAudio(){
   if(audioUnlocked) return;
 
   if(audioCtx.state === "suspended"){
-    audioCtx.resume();   // 🔑 ESTA ES LA LLAVE
+    audioCtx.resume();
   }
 
+  // 🔑 DESTRABA LA MÚSICA (Audio HTML)
+  gameMusic.muted = true;
+  gameMusic.play().catch(()=>{});
+  gameMusic.pause();
+  gameMusic.currentTime = 0;
+  gameMusic.muted = false;
+
+  // 🔊 destraba efectos
   sMove.play().catch(()=>{});
   sMove.pause();
   sMove.currentTime = 0;
@@ -484,6 +493,7 @@ function loadSavedGame(){
   return true;  
 }  
 /* ===== SONIDOS ===== */  
+  
   
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();  
   
