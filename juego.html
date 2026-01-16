@@ -480,6 +480,7 @@ function loadSavedGame(){
   
   
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();  
+  
 /* ===== MÚSICA DEL JUEGO (WebAudio) ===== */
 let musicSource = null;
 let musicGain = null;
@@ -571,12 +572,7 @@ let muted = false;
 let gameStarted = false;
   
   
-const muteBtn = document.getElementById("muteBtn");  
-muteBtn.onclick = () => {  
-  muted = !muted;
 
-  muteBtn.textContent = muted ? "🔇" : "🔊";  
-};
 document.getElementById("menuBtn").onclick = () => {  
   location.href = "index.html";  
 };  
