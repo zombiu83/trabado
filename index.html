@@ -124,46 +124,42 @@ body{
   </button>
 </div>
 <script>
-/* ===== AUDIO ===== */
-let audioCtx = null;
 
-let menuSource = null;
-let menuGain = null;
+/* ===== AUDIO MENU ===== */
+let menuMusic = null;
 
-function unlockAudio(){
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if(audioCtx.state === "suspended"){
-    audioCtx.resume();
-  }
+function startMenuMusic(){
+  if(menuMusic) return;
+
+  menuMusic = new Audio("sounds/juego.mp3");
+  menuMusic.loop = true;
+  menuMusic.volume = 0.5;
+
+  menuMusic.play().catch(e => {
+    console.log("Audio bloqueado:", e);
+  });
 }
 
-async function startMenuMusic(){
-  if(menuSource) return;
+/* ===== OVERLAY ===== */
+const introOverlay = document.getElementById("introOverlay");
 
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
+introOverlay.addEventListener("click", () => {
+  introOverlay.style.display = "none";
+  sessionStorage.setItem("introSeen", "yes");
+  startMenuMusic();
+});
 
-  if(audioCtx.state === "suspended"){
-    await audioCtx.resume();
-  }
+if (sessionStorage.getItem("introSeen")) {
+  introOverlay.style.display = "none";
 
-  const res = await fetch("sounds/juego.mp3");
-  const buf = await res.arrayBuffer();
-  const audioBuffer = await audioCtx.decodeAudioData(buf);
+  document.body.addEventListener("pointerdown", () => {
+    startMenuMusic();
+  }, { once:true });
+}
 
-  menuSource = audioCtx.createBufferSource();
-  menuSource.buffer = audioBuffer;
-  menuSource.loop = true;
-
-  menuGain = audioCtx.createGain();
-  menuGain.gain.value = 0.5;
-
-  menuSource.connect(menuGain);
-  menuGain.connect(audioCtx.destination);
-  menuSource.start();
+/* ===== SERVICE WORKER ===== */
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
 }
 
 const introOverlay = document.getElementById("introOverlay");
