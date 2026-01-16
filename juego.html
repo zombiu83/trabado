@@ -260,18 +260,19 @@ let audioUnlocked = false;
 function unlockAudio(){
   if(audioUnlocked) return;
 
+  // 🔓 AudioContext (efectos)
   if(audioCtx.state === "suspended"){
     audioCtx.resume();
   }
 
-  // 🔑 DESTRABA LA MÚSICA (Audio HTML)
+  // 🔓 MÚSICA (HTMLAudio) — ESTA ERA LA CLAVE
   gameMusic.muted = true;
   gameMusic.play().catch(()=>{});
   gameMusic.pause();
   gameMusic.currentTime = 0;
   gameMusic.muted = false;
 
-  // 🔊 destraba efectos
+  // 🔓 efectos
   sMove.play().catch(()=>{});
   sMove.pause();
   sMove.currentTime = 0;
@@ -539,9 +540,9 @@ function globalUnlock(){
   document.removeEventListener("mousedown", globalUnlock);
 }
 
-document.addEventListener("touchstart", globalUnlock, { passive:true });
-document.addEventListener("pointerdown", globalUnlock);
-document.addEventListener("mousedown", globalUnlock);
+//document.addEventListener("touchstart", globalUnlock, { passive:true });
+//document.addEventListener("pointerdown", globalUnlock);
+//document.addEventListener("mousedown", globalUnlock);
   
 /* ===== ENGANCHE DE SONIDOS ===== */  
   
