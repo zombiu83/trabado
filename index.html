@@ -125,18 +125,7 @@ body{
 </div>
 <script>
 /* ===== AUDIO ===== */
-let menuMusic = new Audio("sounds/menu.mp3");
-menuMusic.loop = true;
-menuMusic.volume = 0.5;
-
-function startMenuMusic(){
-  menuMusic.play().catch(e => {
-    console.log("Audio bloqueado:", e);
-  });
-}
-
-/* ===== DOM ===== */
-const introOverlay = document.getElementById("introOverlay");
+let menuMusic = null;
 
 function startMenuMusic(){
   if(menuMusic) return;
@@ -150,22 +139,22 @@ function startMenuMusic(){
   });
 }
 
-/* ===== CLICK INICIAL ===== */
+const introOverlay = document.getElementById("introOverlay");
+
 introOverlay.addEventListener("click", () => {
   introOverlay.style.display = "none";
   sessionStorage.setItem("introSeen", "yes");
   startMenuMusic();
 });
 
-/* ===== SI YA VIO EL LOGO ===== */
 if (sessionStorage.getItem("introSeen")) {
   introOverlay.style.display = "none";
 
-  // espera UN toque mínimo
   document.body.addEventListener("click", () => {
     startMenuMusic();
   }, { once:true });
 }
+  
 
 /* ===== SERVICE WORKER ===== */
 if ("serviceWorker" in navigator) {
