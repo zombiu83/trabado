@@ -245,10 +245,7 @@ document.addEventListener("touchmove", function(e){
 const sMove = new Audio("sounds/slide.mp3");// <-- tu mp3 aquí
 sMove.volume = 0.20; // 🎚️ volumen editable
 /* ===== MÚSICA DEL JUEGO ===== */
-const gameMusic = new Audio("sounds/juego.mp3");
-gameMusic.loop = true;
-gameMusic.volume = 0.80; // 🎚️ volumen editable
-
+const gameMusic = document.getElementById("gameMusic");
 sMove.preload = "auto";
 sMove.playbackRate = 2;
   
@@ -262,22 +259,9 @@ let audioUnlocked = false;
 function unlockAudio(){
   if(audioUnlocked) return;
 
-  // 🔓 AudioContext (efectos)
   if(audioCtx.state === "suspended"){
     audioCtx.resume();
   }
-
-  // 🔓 MÚSICA (HTMLAudio) — ESTA ERA LA CLAVE
-  gameMusic.muted = true;
-  gameMusic.play().catch(()=>{});
-  gameMusic.pause();
-  gameMusic.currentTime = 0;
-  gameMusic.muted = false;
-
-  // 🔓 efectos
-  sMove.play().catch(()=>{});
-  sMove.pause();
-  sMove.currentTime = 0;
 
   audioUnlocked = true;
 }
