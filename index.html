@@ -125,13 +125,17 @@ body{
 </div>
 <script>
 /* ===== AUDIO ===== */
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let audioCtx = null;
 
 let menuSource = null;
 let menuGain = null;
 
 async function startMenuMusic(){
   if(menuSource) return;
+
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
 
   if(audioCtx.state === "suspended"){
     await audioCtx.resume();
