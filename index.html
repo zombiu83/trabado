@@ -124,12 +124,35 @@ body{
   </button>
 </div>
 <script>
+/* ===== DESBLOQUEO GLOBAL DE AUDIO ===== */
+let audioUnlocked = false;
+
+function unlockAudio(){
+  if(audioUnlocked) return;
+
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AudioCtx();
+
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+
+  o.connect(g);
+  g.connect(ctx.destination);
+
+  g.gain.value = 0;
+  o.start();
+  o.stop(ctx.currentTime + 0.01);
+
+  audioUnlocked = true;
+}
+
+/* ===== DOM ===== */
 const introOverlay = document.getElementById("introOverlay");
 
 /* ===== MÚSICA MENÚ ===== */
 const menuMusic = new Audio("sounds/menu.mp3");
 menuMusic.loop = true;
-menuMusic.volume = 0.50; // 🎚️ volumen editable
+menuMusic.volume = 0.50;
 
 // si ya vio el logo
 if (sessionStorage.getItem("introSeen")) {
@@ -140,11 +163,12 @@ if (sessionStorage.getItem("introSeen")) {
 }
 
 introOverlay.addEventListener("click", () => {
+  unlockAudio();                 // 🔓 DESBLOQUEA AUDIO
+
   introOverlay.style.display = "none";
   sessionStorage.setItem("introSeen", "yes");
 
-  // 🔊 arrancar música
-  menuMusic.play().catch(()=>{});
+  menuMusic.play().catch(()=>{}); // 🔊 AHORA SÍ SUENA
 });
 
 
