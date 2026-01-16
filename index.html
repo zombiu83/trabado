@@ -137,7 +137,7 @@ async function startMenuMusic(){
     await audioCtx.resume();
   }
 
-  const res = await fetch("sounds/menu.mp3");
+  const res = await fetch("sounds/juego.mp3");
   const buf = await res.arrayBuffer();
   const audioBuffer = await audioCtx.decodeAudioData(buf);
 
