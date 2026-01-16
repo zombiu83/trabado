@@ -146,13 +146,9 @@ introOverlay.addEventListener("click", () => {
   sessionStorage.setItem("introSeen", "yes");
   startMenuMusic();
 });
-
-if (sessionStorage.getItem("introSeen")) {
+  if (sessionStorage.getItem("introSeen")) {
   introOverlay.style.display = "none";
-
-  document.body.addEventListener("click", () => {
-    startMenuMusic();
-  }, { once:true });
+  startMenuMusic();
 }
   
 
