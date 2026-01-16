@@ -233,8 +233,6 @@ button{
   <button id="muteBtn">🔊</button>
 </div>
 
-<audio id="gameMusic" src="sounds/juego.mp3" loop></audio>
-
   
 <script>  
 
@@ -244,8 +242,7 @@ document.addEventListener("touchmove", function(e){
 
 const sMove = new Audio("sounds/slide.mp3");// <-- tu mp3 aquí
 sMove.volume = 0.20; // 🎚️ volumen editable
-/* ===== MÚSICA DEL JUEGO ===== */
-const gameMusic = document.getElementById("gameMusic");
+
 sMove.preload = "auto";
 sMove.playbackRate = 2;
   
@@ -556,12 +553,6 @@ const muteBtn = document.getElementById("muteBtn");
 muteBtn.onclick = () => {  
   muted = !muted;
 
-  if(muted){
-    gameMusic.pause();      // 🔇 pausa música
-  } else {
-    gameMusic.play().catch(()=>{}); // 🔊 reanuda música
-  }
-
   muteBtn.textContent = muted ? "🔇" : "🔊";  
 };
 document.getElementById("menuBtn").onclick = () => {  
@@ -593,7 +584,6 @@ const startBtn = document.getElementById("startBtn");
 
 startBtn.onclick = () => {
   unlockAudio();
-  gameMusic.play().catch(()=>{}); // 🔊 ARRANCA MÚSICA
   gameStarted = true;
   startOverlay.style.display = "none";
 };
