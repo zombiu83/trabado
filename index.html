@@ -162,8 +162,11 @@ introOverlay.addEventListener("click", () => {
 });
   if (sessionStorage.getItem("introSeen")) {
   introOverlay.style.display = "none";
-  startMenuMusic();
-}
+
+  document.body.addEventListener("pointerdown", () => {
+    startMenuMusic();
+  }, { once: true });
+  }
   
 
 /* ===== SERVICE WORKER ===== */
