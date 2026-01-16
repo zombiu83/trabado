@@ -125,18 +125,32 @@ body{
 </div>
 <script>
 /* ===== AUDIO ===== */
-let menuMusic = null;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function startMenuMusic(){
-  if(menuMusic) return;
+let menuSource = null;
+let menuGain = null;
 
-  menuMusic = new Audio("sounds/menu.mp3");
-  menuMusic.loop = true;
-  menuMusic.volume = 0.5;
+async function startMenuMusic(){
+  if(menuSource) return;
 
-  menuMusic.play().catch(e => {
-    console.log("Audio bloqueado:", e);
-  });
+  if(audioCtx.state === "suspended"){
+    await audioCtx.resume();
+  }
+
+  const res = await fetch("sounds/menu.mp3");
+  const buf = await res.arrayBuffer();
+  const audioBuffer = await audioCtx.decodeAudioData(buf);
+
+  menuSource = audioCtx.createBufferSource();
+  menuSource.buffer = audioBuffer;
+  menuSource.loop = true;
+
+  menuGain = audioCtx.createGain();
+  menuGain.gain.value = 0.5;
+
+  menuSource.connect(menuGain);
+  menuGain.connect(audioCtx.destination);
+  menuSource.start();
 }
 
 const introOverlay = document.getElementById("introOverlay");
