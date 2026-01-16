@@ -480,6 +480,28 @@ function loadSavedGame(){
   
   
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();  
+/* ===== MÚSICA DEL JUEGO (WebAudio) ===== */
+let musicSource = null;
+let musicGain = null;
+
+async function startGameMusic(){
+  if(musicSource) return;
+
+  const res = await fetch("sounds/juego.mp3");
+  const buf = await res.arrayBuffer();
+  const audioBuffer = await audioCtx.decodeAudioData(buf);
+
+  musicSource = audioCtx.createBufferSource();
+  musicSource.buffer = audioBuffer;
+  musicSource.loop = true;
+
+  musicGain = audioCtx.createGain();
+  musicGain.gain.value = muted ? 0 : 0.35;
+
+  musicSource.connect(musicGain);
+  musicGain.connect(audioCtx.destination);
+  musicSource.start();
+}
   
 function playSound(type){
   if(muted) return; // no suena si está muteado
