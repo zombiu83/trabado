@@ -130,6 +130,15 @@ let audioCtx = null;
 let menuSource = null;
 let menuGain = null;
 
+function unlockAudio(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if(audioCtx.state === "suspended"){
+    audioCtx.resume();
+  }
+}
+
 async function startMenuMusic(){
   if(menuSource) return;
 
@@ -160,9 +169,10 @@ async function startMenuMusic(){
 const introOverlay = document.getElementById("introOverlay");
 
 introOverlay.addEventListener("click", () => {
+  unlockAudio();          // 👈 CLAVE
+  startMenuMusic();       // 👈 ahora sí
   introOverlay.style.display = "none";
   sessionStorage.setItem("introSeen", "yes");
-  startMenuMusic();
 });
   if (sessionStorage.getItem("introSeen")) {
   introOverlay.style.display = "none";
