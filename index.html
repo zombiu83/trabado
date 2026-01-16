@@ -124,59 +124,46 @@ body{
   </button>
 </div>
 <script>
-/* ===== DESBLOQUEO GLOBAL DE AUDIO ===== */
-let audioUnlocked = false;
-
-function unlockAudio(){
-  if(audioUnlocked) return;
-
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  const ctx = new AudioCtx();
-
-  const o = ctx.createOscillator();
-  const g = ctx.createGain();
-
-  o.connect(g);
-  g.connect(ctx.destination);
-
-  g.gain.value = 0;
-  o.start();
-  o.stop(ctx.currentTime + 0.01);
-
-  audioUnlocked = true;
-}
+/* ===== AUDIO ===== */
+let menuMusic = null;
 
 /* ===== DOM ===== */
 const introOverlay = document.getElementById("introOverlay");
 
-/* ===== MÚSICA MENÚ ===== */
-const menuMusic = new Audio("sounds/menu.mp3");
-menuMusic.loop = true;
-menuMusic.volume = 0.50;
+function startMenuMusic(){
+  if(menuMusic) return;
 
-// si ya vio el logo
-if (sessionStorage.getItem("introSeen")) {
-  introOverlay.style.display = "none";
+  menuMusic = new Audio("sounds/menu.mp3");
+  menuMusic.loop = true;
+  menuMusic.volume = 0.5;
 
-  // 🔊 arrancar música directo
-  menuMusic.play().catch(()=>{});
+  menuMusic.play().catch(e => {
+    console.log("Audio bloqueado:", e);
+  });
 }
 
+/* ===== CLICK INICIAL ===== */
 introOverlay.addEventListener("click", () => {
-  unlockAudio();                 // 🔓 DESBLOQUEA AUDIO
-
   introOverlay.style.display = "none";
   sessionStorage.setItem("introSeen", "yes");
 
-  menuMusic.play().catch(()=>{}); // 🔊 AHORA SÍ SUENA
+  startMenuMusic(); // 🔊 CREA Y REPRODUCE ACÁ
 });
 
+/* ===== SI YA VIO EL LOGO ===== */
+if (sessionStorage.getItem("introSeen")) {
+  introOverlay.style.display = "none";
 
+  // espera UN toque mínimo
+  document.body.addEventListener("click", () => {
+    startMenuMusic();
+  }, { once:true });
+}
+
+/* ===== SERVICE WORKER ===== */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
-
-
 </script>
 
 
