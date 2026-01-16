@@ -497,7 +497,7 @@ async function startGameMusic(){
   musicSource.loop = true;
 
   musicGain = audioCtx.createGain();
-  musicGain.gain.value = muted ? 0 : 0.35;
+  musicGain.gain.value = muted ? 0 : 0.50;
 
   musicSource.connect(musicGain);
   musicGain.connect(audioCtx.destination);
