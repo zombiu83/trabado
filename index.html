@@ -28,7 +28,6 @@ body{
   border-radius:20px;
   text-align:center;
   color:white;
-  box-shadow:0 20px 40px rgba(0,0,0,.8);
 }
 
 #title{
@@ -68,20 +67,13 @@ body{
   justify-content:center;
   z-index:10000;
 }
-#introOverlay img{
-  max-width:80%;
-}
-#introOverlay span{
-  margin-top:20px;
-  color:white;
-  opacity:.7;
-}
+#introOverlay img{ max-width:80%; }
+#introOverlay span{ margin-top:20px;color:white;opacity:.7; }
 </style>
 </head>
 
 <body>
 
-<!-- 🔊 AUDIO PRECREADO -->
 <audio id="menuMusic" src="sounds/juego.mp3" loop></audio>
 
 <div id="introOverlay">
@@ -91,23 +83,28 @@ body{
 
 <div id="menu">
   <div id="title">TRABADO</div>
-
-  <button class="menu-btn" onclick="location.href='juego.html'">
-    JUGAR
-  </button>
-
-  <button class="menu-btn" onclick="reglas.html'">
-    REGLAS
-  </button>
+  <button class="menu-btn" onclick="location.href='juego.html'">JUGAR</button>
+  <button class="menu-btn" onclick="location.href='reglas.html'">REGLAS</button>
 </div>
 
 <script>
+let audioCtx = null;
 const overlay = document.getElementById("introOverlay");
 const music   = document.getElementById("menuMusic");
 
+function unlockAudio(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if(audioCtx.state === "suspended"){
+    audioCtx.resume();
+  }
+}
+
 overlay.addEventListener("click", () => {
+  unlockAudio();              // 🔑 DESBLOQUEO REAL
   music.volume = 0.5;
-  music.play();                // 🔑 gesto REAL
+  music.play();               // 🎵 ahora sí
   overlay.style.display="none";
   sessionStorage.setItem("introSeen","1");
 });
@@ -115,6 +112,7 @@ overlay.addEventListener("click", () => {
 if(sessionStorage.getItem("introSeen")){
   overlay.style.display="none";
   document.body.addEventListener("click",()=>{
+    unlockAudio();
     music.play();
   },{once:true});
 }
