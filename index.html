@@ -9,8 +9,8 @@
 
 <style>
 @font-face{
-  font-family: "TrabadoFont";
-  src: url("fonts/pixelgamer-regular.otf");
+  font-family:"TrabadoFont";
+  src:url("fonts/pixelgamer-regular.otf");
 }
 body{
   margin:0;
@@ -31,7 +31,6 @@ body{
   box-shadow:0 20px 40px rgba(0,0,0,.8);
 }
 
-/* ===== TÍTULO ===== */
 #title{
   font-size:48px;
   font-weight:900;
@@ -39,19 +38,13 @@ body{
   color:#66cdaa;
   animation:bounce 1s infinite ease-in-out;
   font-family:"TrabadoFont", system-ui;
-  text-shadow:
-    0 2px 0 #15803d,
-    0 4px 0 #166534,
-    0 6px 0 #14532d,
-    0 8px 12px rgba(0,0,0,.8);
 }
 
 @keyframes bounce{
-  0%,100%{ transform:translateY(0); }
-  50%{ transform:translateY(-12px); }
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
 }
 
-/* ===== BOTONES ===== */
 .menu-btn{
   width:200px;
   padding:14px;
@@ -63,11 +56,8 @@ body{
   cursor:pointer;
   background:#1e3a8a;
   color:white;
-  box-shadow:0 8px 16px rgba(0,0,0,.6);
 }
-.menu-btn:active{ transform:scale(.95); }
 
-/* ===== OVERLAY ===== */
 #introOverlay{
   position:fixed;
   inset:0;
@@ -80,12 +70,10 @@ body{
 }
 #introOverlay img{
   max-width:80%;
-  max-height:60%;
 }
 #introOverlay span{
   margin-top:20px;
   color:white;
-  font-size:18px;
   opacity:.7;
 }
 </style>
@@ -93,8 +81,11 @@ body{
 
 <body>
 
+<!-- 🔊 AUDIO PRECREADO -->
+<audio id="menuMusic" src="sounds/juego.mp3" loop></audio>
+
 <div id="introOverlay">
-  <img src="img/zombius.png" alt="Zombius Game">
+  <img src="img/zombius.png">
   <span>Tocá para empezar</span>
 </div>
 
@@ -105,46 +96,29 @@ body{
     JUGAR
   </button>
 
-  <button class="menu-btn" onclick="location.href='reglas.html'">
+  <button class="menu-btn" onclick="reglas.html'">
     REGLAS
   </button>
 </div>
 
 <script>
-/* ===== AUDIO MENU ===== */
-let menuMusic = null;
+const overlay = document.getElementById("introOverlay");
+const music   = document.getElementById("menuMusic");
 
-function startMenuMusic(){
-  if(menuMusic) return;
-
-  menuMusic = new Audio("sounds/juego.mp3");
-  menuMusic.loop = true;
-  menuMusic.volume = 0.5;
-
-  menuMusic.play().catch(err=>{
-    console.log("Audio bloqueado:", err);
-  });
-}
-
-/* ===== OVERLAY + ARRANQUE REAL ===== */
-const introOverlay = document.getElementById("introOverlay");
-
-introOverlay.addEventListener("click", () => {
-  startMenuMusic();                // 🎵 arranca con gesto real
-  introOverlay.style.display = "none";
-  sessionStorage.setItem("introSeen","yes");
+overlay.addEventListener("click", () => {
+  music.volume = 0.5;
+  music.play();                // 🔑 gesto REAL
+  overlay.style.display="none";
+  sessionStorage.setItem("introSeen","1");
 });
 
-/* Si ya lo vio, igual espera 1 toque */
 if(sessionStorage.getItem("introSeen")){
-  introOverlay.style.display = "none";
-
-  document.body.addEventListener("click", () => {
-    startMenuMusic();
-  }, { once:true });
+  overlay.style.display="none";
+  document.body.addEventListener("click",()=>{
+    music.play();
+  },{once:true});
 }
 
-/* ===== SERVICE WORKER ===== */
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js");
 }
