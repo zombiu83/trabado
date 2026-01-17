@@ -124,7 +124,6 @@ body{
   </button>
 </div>
 <script>
-
 /* ===== AUDIO MENU ===== */
 let menuMusic = null;
 
@@ -135,26 +134,26 @@ function startMenuMusic(){
   menuMusic.loop = true;
   menuMusic.volume = 0.5;
 
-  menuMusic.play().catch(e => {
-    console.log("Audio bloqueado:", e);
+  menuMusic.play().catch(err => {
+    console.log("Audio bloqueado:", err);
   });
 }
 
 /* ===== OVERLAY ===== */
 const introOverlay = document.getElementById("introOverlay");
 
-introOverlay.addEventListener("click", () => {
+introOverlay.addEventListener("pointerdown", () => {
   introOverlay.style.display = "none";
   sessionStorage.setItem("introSeen", "yes");
   startMenuMusic();
-});
+}, { once: true });
 
 if (sessionStorage.getItem("introSeen")) {
   introOverlay.style.display = "none";
 
   document.body.addEventListener("pointerdown", () => {
     startMenuMusic();
-  }, { once:true });
+  }, { once: true });
 }
 
 /* ===== SERVICE WORKER ===== */
